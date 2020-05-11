@@ -1,4 +1,9 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module ResistorColors (Color(..), Resistor(..), label, ohms) where
+
+import qualified Data.Text as T
+import           Data.Text (Text)
 
 data Color =
     Black
@@ -40,15 +45,17 @@ colorValue Violet = 7
 colorValue Grey   = 8
 colorValue White  = 9
 
-label :: Resistor -> String
+label :: Resistor -> Text
 label resistor
-  | resistorOhms < kilo = show resistorOhms              <> " ohms"
-  | resistorOhms < mega = show (resistorOhms `div` kilo) <> " kiloohms"
-  | resistorOhms < giga = show (resistorOhms `div` mega) <> " megaohms"
-  | otherwise           = show (resistorOhms `div` giga) <> " gigaohms"
+  | resistorOhms < kilo = toText resistorOhms              <> " ohms"
+  | resistorOhms < mega = toText (resistorOhms `div` kilo) <> " kiloohms"
+  | resistorOhms < giga = toText (resistorOhms `div` mega) <> " megaohms"
+  | otherwise           = toText (resistorOhms `div` giga) <> " gigaohms"
   where
     resistorOhms :: Int
     resistorOhms = ohms resistor
+    toText :: Show a => a -> Text
+    toText = T.pack . show
 
 ohms :: Resistor -> Int
 ohms resistor = (colorValue a * 10 + colorValue b) * offset

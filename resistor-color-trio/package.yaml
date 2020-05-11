@@ -8,9 +8,8 @@ library:
   exposed-modules: ResistorColors
   source-dirs: src
   ghc-options: -Wall
-  # dependencies:
-  # - foo       # List here the packages you
-  # - bar       # want to use in your solution.
+  dependencies:
+  - text
 
 tests:
   test:
