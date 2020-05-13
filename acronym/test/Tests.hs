@@ -66,4 +66,8 @@ cases = [ Case { description = "basic"
                , input       = "The Road _Not_ Taken"
                , expected    = "TRNT"
                }
+        , Case { description = "Empty string"
+               , input       = ""
+               , expected    = ""
+               }
         ]

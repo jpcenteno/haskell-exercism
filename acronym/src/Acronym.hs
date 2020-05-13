@@ -29,10 +29,19 @@ import Data.Char (isLetter, isUpper, toUpper)
 -- The function processing the current character knows which case to call next.
 -- This may lead to lots of functions with weird relations, this might get
 -- complex anyway.
+--
+-- Implementation
+-- --------------
+--
+-- I went with the 2nd option and I think the result is okay. I liked the idea
+-- of implementing a FSM using recursive functions.
 
 abbreviate :: String -> String
 abbreviate = map toUpper . fsmCharMustBeInitial
   where
+
+    isDashOrSpace :: Char -> Bool
+    isDashOrSpace c = c == ' ' || c == '-'
 
     -- Ensures that the next character will be an initial.
     fsmCharMustBeInitial :: String -> String
@@ -46,15 +55,15 @@ abbreviate = map toUpper . fsmCharMustBeInitial
     -- 1. A space ' ' or dash '-' char is met => Next char must be initial.
     fsmCharCanNotBeInitial :: String -> String
     fsmCharCanNotBeInitial "" = ""
-    fsmCharCanNotBeInitial (' ':cs) = fsmCharMustBeInitial cs
-    fsmCharCanNotBeInitial ( c :cs)
-      | isUpper c = fsmCharCanNotBeInitial cs
-      | otherwise = fsmCharCouldBeInitial cs
+    fsmCharCanNotBeInitial (c:cs)
+      | isDashOrSpace c = fsmCharMustBeInitial cs
+      | isUpper c       = fsmCharCanNotBeInitial cs
+      | otherwise       = fsmCharCouldBeInitial cs
 
+    -- Return the char as initial if and only if it's uppercase.
     fsmCharCouldBeInitial :: String -> String
     fsmCharCouldBeInitial "" = ""
-    fsmCharCouldBeInitial (' ':cs) = fsmCharMustBeInitial cs
-    fsmCharCouldBeInitial ('-':cs) = fsmCharMustBeInitial cs
-    fsmCharCouldBeInitial ( c :cs)
-      | isUpper c = c : fsmCharCanNotBeInitial cs
-      | otherwise =     fsmCharCouldBeInitial cs
+    fsmCharCouldBeInitial (c:cs)
+      | isDashOrSpace c =     fsmCharMustBeInitial cs
+      | isUpper c       = c : fsmCharCanNotBeInitial cs
+      | otherwise       =     fsmCharCouldBeInitial cs
