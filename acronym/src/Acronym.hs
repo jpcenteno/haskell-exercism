@@ -1,6 +1,6 @@
 module Acronym (abbreviate) where
 
-import Data.Char (isLetter, toUpper)
+import Data.Char (isLetter, isUpper, toUpper)
 
 -- I started with a naive solution:
 --
@@ -39,7 +39,7 @@ abbreviate = map toUpper . fsmCharMustBeInitial
     fsmCharMustBeInitial "" = ""
     fsmCharMustBeInitial (c:cs)
       | isLetter c = c : fsmCharCanNotBeInitial cs
-      | otherwise  = fsmCharMustBeInitial cs
+      | otherwise  =     fsmCharMustBeInitial cs
 
     -- first character of the string CAN'T be an initial.
     -- State will change when:
@@ -47,4 +47,14 @@ abbreviate = map toUpper . fsmCharMustBeInitial
     fsmCharCanNotBeInitial :: String -> String
     fsmCharCanNotBeInitial "" = ""
     fsmCharCanNotBeInitial (' ':cs) = fsmCharMustBeInitial cs
-    fsmCharCanNotBeInitial ( _ :cs) = fsmCharCanNotBeInitial cs
+    fsmCharCanNotBeInitial ( c :cs)
+      | isUpper c = fsmCharCanNotBeInitial cs
+      | otherwise = fsmCharCouldBeInitial cs
+
+    fsmCharCouldBeInitial :: String -> String
+    fsmCharCouldBeInitial "" = ""
+    fsmCharCouldBeInitial (' ':cs) = fsmCharMustBeInitial cs
+    fsmCharCouldBeInitial ('-':cs) = fsmCharMustBeInitial cs
+    fsmCharCouldBeInitial ( c :cs)
+      | isUpper c = c : fsmCharCanNotBeInitial cs
+      | otherwise =     fsmCharCouldBeInitial cs
