@@ -1,15 +1,21 @@
 module School (School, add, empty, grade, sorted) where
 
-data School = Dummy
+import           Data.List (sort)
+import qualified Data.MultiMap as MultiMap
+import           Data.MultiMap (MultiMap)
 
-add :: Int -> String -> School -> School
-add gradeNum student school = error "You need to implement this function."
+type Grade = Int
+type Student = String
+newtype School = School (MultiMap Grade Student)
+
+add :: Grade -> Student -> School -> School
+add gradeNum student (School m) = School $ MultiMap.insert gradeNum student m
 
 empty :: School
-empty = error "You need to implement this function."
+empty = School $ MultiMap.empty
 
-grade :: Int -> School -> [String]
-grade gradeNum school = error "You need to implement this function."
+grade :: Int -> School -> [Student]
+grade gradeNum (School m) = sort $ MultiMap.lookup gradeNum m
 
-sorted :: School -> [(Int, [String])]
-sorted school = error "You need to implement this function."
+sorted :: School -> [(Int, [Student])]
+sorted (School m) = map (fmap sort) $ MultiMap.assocs m
