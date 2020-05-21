@@ -42,20 +42,21 @@ instance Turnable Robot where
     turnLeft  robot = robot { bearing = turnLeft  $ bearing robot }
 
 -- | Move the robot forward.
-advance :: Robot -> Robot
-advance Robot{bearing=North, coordinates=(x, y)} = Robot North (x    , y + 1)
-advance Robot{bearing=East,  coordinates=(x, y)} = Robot East  (x + 1, y    )
-advance Robot{bearing=South, coordinates=(x, y)} = Robot South (x    , y - 1)
-advance Robot{bearing=West,  coordinates=(x, y)} = Robot West  (x - 1, y    )
+forward :: Robot -> Robot
+forward Robot{bearing=North, coordinates=(x, y)} = Robot North (x    , y + 1)
+forward Robot{bearing=East,  coordinates=(x, y)} = Robot East  (x + 1, y    )
+forward Robot{bearing=South, coordinates=(x, y)} = Robot South (x    , y - 1)
+forward Robot{bearing=West,  coordinates=(x, y)} = Robot West  (x - 1, y    )
+
+-- | Return the resulting state of a single instruction.
+performInstruction :: Robot -> Char -> Robot
+performInstruction robot 'R' = turnRight robot
+performInstruction robot 'L' = turnLeft robot
+performInstruction robot 'A' = forward robot
+performInstruction _     _   = error "unsupported instruction"
 
 mkRobot :: Bearing -> (Integer, Integer) -> Robot
 mkRobot = Robot -- Use the constructor
 
-performInstruction :: Char -> Robot -> Robot
-performInstruction 'R' = turnRight
-performInstruction 'L' = turnLeft
-performInstruction 'A' = advance
-performInstruction _   = error "unsupported instruction"
-
 move :: Robot -> String -> Robot
-move robot instructions = foldl (flip performInstruction) robot instructions
+move robot instructions = foldl performInstruction robot instructions
